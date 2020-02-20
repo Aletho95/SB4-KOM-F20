@@ -6,7 +6,6 @@ import dk.sdu.mmmi.cbse.common.data.World;
 import dk.sdu.mmmi.cbse.common.data.entityparts.MovingPart;
 import dk.sdu.mmmi.cbse.common.data.entityparts.PositionPart;
 import dk.sdu.mmmi.cbse.common.services.IEntityProcessingService;
-import static dk.sdu.mmmi.cbse.common.data.GameKeys.SPACE;
 
 /**
  *
@@ -25,8 +24,8 @@ public class ProjectileControlSystem implements IEntityProcessingService {
                 movingPart.process(gameData, projectile);
                 positionPart.process(gameData, projectile);
 
-                if(positionPart.getX() > gameData.getDisplayWidth() - 5 
-                        || positionPart.getY() > gameData.getDisplayHeight() - 5) {
+                if(positionPart.getX() > gameData.getDisplayWidth() - 10 
+                        || positionPart.getY() > gameData.getDisplayHeight() - 10) {
                     world.getEntities().remove(projectile);
                 } else {
                     updateShape(projectile);
@@ -57,5 +56,4 @@ public class ProjectileControlSystem implements IEntityProcessingService {
         entity.setShapeX(shapex);
         entity.setShapeY(shapey);
     }
-
 }

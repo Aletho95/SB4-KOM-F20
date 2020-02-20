@@ -13,6 +13,7 @@
         <module>Projectile</module>
         <module>HitDetection</module>
         <module>Asteroid</module>
+        <module>CommonProjectile</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -22,6 +22,8 @@ public class LifePart implements EntityPart {
         this.life = life;
         this.expiration = expiration;
     }
+    
+    
 
     public int getLife() {
         return life;

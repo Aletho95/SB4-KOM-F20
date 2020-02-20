@@ -68,7 +68,7 @@ public class MovingPart
         float y = positionPart.getY();
         float radians = positionPart.getRadians();
         float dt = gameData.getDelta();
-
+        
         // turning
         if (left) {
             radians += rotationSpeed * dt;
@@ -114,7 +114,6 @@ public class MovingPart
 
         positionPart.setX(x);
         positionPart.setY(y);
-
         positionPart.setRadians(radians);
     }
 
