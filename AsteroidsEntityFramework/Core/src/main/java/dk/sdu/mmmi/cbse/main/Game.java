@@ -5,14 +5,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import dk.sdu.mmmi.cbse.asteroid.AsteroidControlSystem;
+import dk.sdu.mmmi.cbse.asteroid.AsteroidPlugin;
 import dk.sdu.mmmi.cbse.common.data.Entity;
 import dk.sdu.mmmi.cbse.common.data.GameData;
+import dk.sdu.mmmi.cbse.common.data.GameKeys;
 import dk.sdu.mmmi.cbse.common.data.World;
 import dk.sdu.mmmi.cbse.common.services.IEntityProcessingService;
 import dk.sdu.mmmi.cbse.common.services.IGamePluginService;
+import dk.sdu.mmmi.cbse.common.services.IPostEntityProcessingService;
+import dk.sdu.mmmi.cbse.enemy.EnemyControlSystem;
+import dk.sdu.mmmi.cbse.enemy.EnemyPlugin;
+import dk.sdu.mmmi.cbse.hitdetection.HitDetection;
 import dk.sdu.mmmi.cbse.managers.GameInputProcessor;
 import dk.sdu.mmmi.cbse.playersystem.PlayerPlugin;
 import dk.sdu.mmmi.cbse.playersystem.PlayerControlSystem;
+import dk.sdu.mmmi.cbse.projectile.ProjectileControlSystem;
+import dk.sdu.mmmi.cbse.projectile.ProjectilePlugin;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +33,12 @@ public class Game
 
     private final GameData gameData = new GameData();
     private List<IEntityProcessingService> entityProcessors = new ArrayList<>();
+    private List<IPostEntityProcessingService> postEntityProcessors = new ArrayList<>();
     private List<IGamePluginService> entityPlugins = new ArrayList<>();
     private World world = new World();
 
+    IGamePluginService projectilePlugin;
+    
     @Override
     public void create() {
 
@@ -43,10 +55,11 @@ public class Game
                 new GameInputProcessor(gameData)
         );
 
-        IGamePluginService playerPlugin = new PlayerPlugin();
-        IEntityProcessingService playerProcess = new PlayerControlSystem();
-        entityPlugins.add(playerPlugin);
-        entityProcessors.add(playerProcess);
+        IPostEntityProcessingService hitDetection = new HitDetection();
+        postEntityProcessors.add(hitDetection);
+
+        initProcessesPlugins();
+
         // Lookup all Game Plugins using ServiceLoader
         for (IGamePluginService iGamePlugin : entityPlugins) {
             iGamePlugin.start(gameData, world);
@@ -71,8 +84,16 @@ public class Game
 
     private void update() {
         // Update
+        if (gameData.getKeys().isPressed(GameKeys.SPACE)) {
+            projectilePlugin.start(gameData, world);
+        }
+
         for (IEntityProcessingService entityProcessorService : entityProcessors) {
             entityProcessorService.process(gameData, world);
+        }
+
+        for (IPostEntityProcessingService postEntityProcessor : postEntityProcessors) {
+            postEntityProcessor.process(gameData, world);
         }
     }
 
@@ -111,5 +132,38 @@ public class Game
 
     @Override
     public void dispose() {
+    }
+
+    private void initProcessesPlugins() {
+        IGamePluginService playerPlugin = new PlayerPlugin();
+        IEntityProcessingService playerProcess = new PlayerControlSystem();
+
+        IGamePluginService enemyPlugin = new EnemyPlugin();
+        IEntityProcessingService enemyProcess = new EnemyControlSystem();
+
+        IGamePluginService asteroidPlugin = new AsteroidPlugin();
+        IEntityProcessingService asteroidProcess = new AsteroidControlSystem();
+
+        IGamePluginService asteroidPlugin2 = new AsteroidPlugin();
+        IEntityProcessingService asteroidProcess2 = new AsteroidControlSystem();
+
+        IGamePluginService asteroidPlugin3 = new AsteroidPlugin();
+        IEntityProcessingService asteroidProcess3 = new AsteroidControlSystem();
+
+        entityPlugins.add(playerPlugin);
+        entityPlugins.add(enemyPlugin);
+        entityPlugins.add(asteroidPlugin);
+        entityPlugins.add(asteroidPlugin2);
+        entityPlugins.add(asteroidPlugin3);
+
+        entityProcessors.add(playerProcess);
+        entityProcessors.add(enemyProcess);
+        entityProcessors.add(asteroidProcess);
+        entityProcessors.add(asteroidProcess2);
+        entityProcessors.add(asteroidProcess3);
+
+        projectilePlugin = new ProjectilePlugin();
+        IEntityProcessingService projectileProcess = new ProjectileControlSystem();
+        entityProcessors.add(projectileProcess);
     }
 }
